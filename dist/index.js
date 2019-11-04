@@ -91,14 +91,18 @@ function readFile(path, isAsync, callback) {
   }
 }
 
-function getOptions(loaderContext) {
+function getOptions(loader, content) {
   var properties = Object.keys(_constants.LOADER_OPTIONS_SCHEMA.properties) || [];
   var defaultOptions = {};
   properties.forEach(function (key) {
     return defaultOptions[key] = _constants.LOADER_OPTIONS_SCHEMA.properties[key].default;
   });
-  var result = Object.assign({}, defaultOptions, _loaderUtils.default.getOptions(loaderContext));
-  result.replacement && (result.replacement = (0, _path.resolve)(loaderContext.context, result.replacement));
+  var result = Object.assign({}, defaultOptions, _loaderUtils.default.getOptions(loader));
+  result.replacement && (result.replacement = (0, _path.resolve)(loader.context, result.replacement));
+  result.replacement = _loaderUtils.default.interpolateName(loader, result.replacement, {
+    context: loader.context,
+    content
+  });
   return result;
 }
 /**
@@ -142,7 +146,7 @@ var raw = true;
 exports.raw = raw;
 
 function _default(source) {
-  var options = getOptions(this);
+  var options = getOptions(this, source);
   var isAsync = options && options.async === true;
   var callback = isAsync === true && this.async() || null;
   /**

@@ -71,12 +71,20 @@ function readFile(path, isAsync, callback) {
   }
 }
 
-function getOptions(loaderContext) {
+function getOptions(loader, content) {
   const properties = Object.keys(LOADER_OPTIONS_SCHEMA.properties) || [];
   const defaultOptions = {};
   properties.forEach(key => defaultOptions[key] = LOADER_OPTIONS_SCHEMA.properties[key].default);
-  const result = Object.assign({}, defaultOptions, loaderUtils.getOptions(loaderContext));
-  result.replacement && (result.replacement = resolve(loaderContext.context, result.replacement));
+  const result = Object.assign({}, defaultOptions, loaderUtils.getOptions(loader));
+  result.replacement && (result.replacement = resolve(loader.context, result.replacement));
+  result.replacement = loaderUtils.interpolateName(
+    loader,
+    result.replacement,
+    {
+      context: loader.context,
+      content,
+    },
+  );
   return result;
 }
 
@@ -112,7 +120,7 @@ export const raw = true;
  * File Replace Loader function
  */
 export default function(source) {
-  const options = getOptions(this);
+  const options = getOptions(this, source);
   const isAsync = options && options.async === true;
   const callback = isAsync === true && this.async() || null;
 
