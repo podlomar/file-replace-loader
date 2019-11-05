@@ -76,7 +76,6 @@ function getOptions(loader, content) {
   const defaultOptions = {};
   properties.forEach(key => defaultOptions[key] = LOADER_OPTIONS_SCHEMA.properties[key].default);
   const result = Object.assign({}, defaultOptions, loaderUtils.getOptions(loader));
-  result.replacement && (result.replacement = resolve(loader.context, result.replacement));
   result.replacement = loaderUtils.interpolateName(
     loader,
     result.replacement,
@@ -85,6 +84,7 @@ function getOptions(loader, content) {
       content,
     },
   );
+  result.replacement = resolve(result.replacement);
   return result;
 }
 

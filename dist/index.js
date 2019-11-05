@@ -98,11 +98,11 @@ function getOptions(loader, content) {
     return defaultOptions[key] = _constants.LOADER_OPTIONS_SCHEMA.properties[key].default;
   });
   var result = Object.assign({}, defaultOptions, _loaderUtils.default.getOptions(loader));
-  result.replacement && (result.replacement = (0, _path.resolve)(loader.context, result.replacement));
   result.replacement = _loaderUtils.default.interpolateName(loader, result.replacement, {
     context: loader.context,
     content
   });
+  result.replacement = (0, _path.resolve)(result.replacement);
   return result;
 }
 /**
